@@ -1,0 +1,4 @@
+node_modules
+*.log
+flask
+app/__pycache__

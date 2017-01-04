@@ -2,12 +2,12 @@
 <html>
   <head>
     <title>React Tetris</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="static/style.css">
   </head>
   <body>
     <div id="container">
     <!-- This element's contents will be replaced with your component. -->
     </div>
-    <script src="bundle.js"></script>
+    <script src="static/bundle.js?version=1"></script>
   </body>
 </html>
