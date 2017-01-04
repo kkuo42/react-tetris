@@ -10,13 +10,9 @@ Shift to hold piece
 
 Space to drop piece
 
-
-Link
-------
-https://kkuo42.github.io/react-tetris/
-
 Setup
 --------------
-1. Setup npm, venv, install Flask
-2. Run gulp and flask to host
+1. Setup npm, venv, install flask
+2. Run gulp to automatically rebuild javascript bundle upon changes
+3. Run flask to host game
 
