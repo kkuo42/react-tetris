@@ -5,9 +5,13 @@ var count = 0;
 
 export var GameView = React.createClass({
   render: function () {
-    return <div className="border" style={{width: this.props.game.cols*25-1, height: this.props.game.rows*25-1}}>
+    let s = {
+      width: this.props.game.cols*25-1, 
+      height: this.props.game.rows*25-1,
+    };
+    return <div className="border" style={s}>
       { this.props.game.isGameOver ? 
-          this.props.game.isGameLost() ? 
+          this.props.game.isGameLost() ?  
           <span>
             <h1 style={{margin:'22px'}}>GAME OVER</h1>
             <div style={{margin:'42px'}}>Press Enter to play again</div>
@@ -32,7 +36,14 @@ export var GameView = React.createClass({
 export var PhantomView = React.createClass({
   render: function () {
     return <div>
-      {this.props.piece.points().map(sq => <Square key={count++} row={sq.row} col={sq.col} color={"white"} />)}
+      {this.props.piece.points().map(sq => 
+        <Square 
+          key={count++} 
+          row={sq.row} 
+          col={sq.col} 
+          color={"white"} 
+        />
+      )}
     </div>;
   }
 });
@@ -44,20 +55,34 @@ export var HoldView = React.createClass({
       <HoldPieceView piece={this.props.piece} />
     </div>;
   }
-})
+});
 
 export var HoldPieceView = React.createClass({
   render: function() {
     return <div className="holdPiece">
-      {this.props.piece.shape.pointsRotated('N').map(sq => <Square key={"row"+sq.row+"col"+sq.col}row={sq.row} col={sq.col} color={this.props.piece.shape.color} />)}
+      {this.props.piece.shape.pointsRotated('N').map(sq => 
+        <Square 
+          key={"row"+sq.row+"col"+sq.col}
+          row={sq.row} 
+          col={sq.col} 
+          color={this.props.piece.shape.color} 
+        />
+      )}
     </div>
   }
-})
+});
 
 export var PieceView = React.createClass({
   render: function () {
     return <div>
-      {this.props.piece.points().map(sq => <Square key={count++} row={sq.row} col={sq.col} color={sq.color} />)}
+      {this.props.piece.points().map(sq => 
+        <Square 
+          key={count++} 
+          row={sq.row} 
+          col={sq.col} 
+          color={sq.color} 
+        />
+      )}
     </div>;
   }
 });
@@ -65,7 +90,14 @@ export var PieceView = React.createClass({
 export var RubbleView = React.createClass({
   render: function () {
     return <span>
-      {this.props.rubble.map(sq => <Square key={"row"+sq.row+"col"+sq.col} row={sq.row} col={sq.col} color={sq.color} />)}
+      {this.props.rubble.map(sq => 
+        <Square 
+          key={"row"+sq.row+"col"+sq.col} 
+          row={sq.row} 
+          col={sq.col} 
+          color={sq.color} 
+        />
+      )}
     </span>;
   }
 });
@@ -83,30 +115,44 @@ export var NextView = React.createClass({
   render: function () {
     return <div className="next">
       <div>NEXT</div>
-      {this.props.nextPieces.map((piece, index) => <NextPieceView key={index} num={index} shape={piece.shape} /> )}
+      { this.props.nextPieces.map((piece, index) => 
+        <NextPieceView 
+          key={index} 
+          num={index} 
+          shape={piece.shape} 
+        /> 
+      )}
     </div>;
   }
 })
 
 export var NextPieceView = React.createClass({
-  render: function() {
-    var s = {
+  render: function() { 
+    let s = {
       position: 'relative',
       top: this.props.num*75 + 'px',
     }
     return <div style={s}>
-      {this.props.shape.pointsRotated('N').map(sq => <Square key={"row"+sq.row+"col"+sq.col}row={sq.row} col={sq.col} color={this.props.shape.color} />)}
+      { this.props.shape.pointsRotated('N').map(sq => 
+        <Square
+          key={"row"+sq.row+"col"+sq.col} 
+          row={sq.row} 
+          col={sq.col} 
+          color={this.props.shape.color} 
+        />
+      )}
     </div>;
   }
-})
+});
 
 export var Square = React.createClass({
-    render: function() {
-    		var s = {
-        	left: (this.props.col-1) * 25 + 'px',
-          top: ((this.props.row-1) * 25) + 'px',
-          backgroundColor: this.props.color,
-        };
-        return <div className="square" style={s}></div>;
-    }
+  render: function() {
+    let s = {
+      left: (this.props.col-1) * 25 + 'px',
+      top: ((this.props.row-1) * 25) + 'px',
+      backgroundColor: this.props.color,
+    };
+
+    return <div className="square" style={s}></div>;
+  }
 });
