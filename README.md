@@ -1,4 +1,4 @@
-Tetris Built in React
+Tetris Built in React+Flask
 ======
 ![tetrisshrunk](https://cloud.githubusercontent.com/assets/17131581/18416561/db05390a-77cc-11e6-950a-ff71dc6d4f2f.png)
 
@@ -14,3 +14,9 @@ Space to drop piece
 Link
 ------
 https://kkuo42.github.io/react-tetris/
+
+Setup
+--------------
+1. Setup npm, venv, install Flask
+2. Run gulp and flask to host
+
