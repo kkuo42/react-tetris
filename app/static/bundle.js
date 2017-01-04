@@ -22687,8 +22687,8 @@ function reducer() {
   switch (action.type) {
     case 'TICK':
       var revState = state.tick();
-      if (!revState.isGameOver()) {
-        setTimeout(function () {
+      if (!revState.isGameOver) {
+        timer = setTimeout(function () {
           return store.dispatch({ type: 'TICK' });
         }, 500);
       }
@@ -22706,8 +22706,9 @@ function reducer() {
     case 'HOLD':
       return state.hold();
     case 'START':
-      if (state.isGameOver()) {
-        setTimeout(function () {
+      if (state.isGameOver) {
+        clearTimeout(timer);
+        timer = setTimeout(function () {
           return store.dispatch({ type: 'TICK' });
         }, 500);
         return state.startNextGame();
@@ -22744,7 +22745,7 @@ store.subscribe(function () {
   ReactDOM.render(React.createElement(Components.GameView, { game: store.getState() }), document.getElementById('container'));
 });
 
-setTimeout(function () {
+var timer = setTimeout(function () {
   return store.dispatch({ type: 'TICK' });
 }, 500);
 
@@ -22775,18 +22776,31 @@ var GameView = exports.GameView = React.createClass({
     return React.createElement(
       'div',
       { className: 'border', style: { width: this.props.game.cols * 25 - 1, height: this.props.game.rows * 25 - 1 } },
-      this.props.game.isGameOver() ? React.createElement(
+      this.props.game.isGameOver ? this.props.game.isGameLost() ? React.createElement(
         'span',
         null,
         React.createElement(
           'h1',
-          { style: { margin: '20px' } },
+          { style: { margin: '22px' } },
           'GAME OVER'
         ),
         React.createElement(
           'div',
-          { style: { margin: '40px' } },
+          { style: { margin: '42px' } },
           'Press Enter to play again'
+        )
+      ) : React.createElement(
+        'span',
+        null,
+        React.createElement(
+          'h1',
+          { style: { margin: '64px' } },
+          'TETRIS'
+        ),
+        React.createElement(
+          'div',
+          { style: { margin: '62px' } },
+          'Press Enter to play'
         )
       ) : React.createElement(
         'span',
@@ -23132,6 +23146,7 @@ var Game = exports.Game = function () {
     this.rows = 20;
     this.cols = 10;
     this.startNextGame();
+    this.isGameOver = true;
   }
 
   _createClass(Game, [{
@@ -23148,6 +23163,7 @@ var Game = exports.Game = function () {
       this.heldPiece = new Piece(new Tetromino('empty', function (x) {
         return [];
       }, 'white'), this.rows, this.cols);
+      this.isGameOver = false;
       return this;
     }
   }, {
@@ -23253,8 +23269,8 @@ var Game = exports.Game = function () {
       return map[numRows];
     }
   }, {
-    key: 'isGameOver',
-    value: function isGameOver() {
+    key: 'isGameLost',
+    value: function isGameLost() {
       return this.rubble.some(function (point) {
         return point.row === 1;
       });
@@ -23272,7 +23288,9 @@ var Game = exports.Game = function () {
       this.score += this.calculateAward(completedRows.length);
       this.lines += completedRows.length;
 
-      if (!this.isGameOver()) {
+      if (this.isGameLost()) {
+        this.isGameOver = true;
+      } else {
         this.startAPiece();
       }
     }
@@ -23315,6 +23333,10 @@ var Game = exports.Game = function () {
   }, {
     key: 'fall',
     value: function fall() {
+      if (this.isGameOver) {
+        return this;
+      }
+
       while (!this.PieceOverlapsRubble(this.fallingPiece) && !this.PieceIsOutOfBounds(this.fallingPiece)) {
         this.fallingPiece.fallOne();
       }

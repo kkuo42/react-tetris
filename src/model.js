@@ -88,6 +88,7 @@ export class Game {
     this.rows = 20;
     this.cols = 10;
     this.startNextGame();
+    this.isGameOver = true;
   }
 
   startNextGame() {
@@ -100,6 +101,7 @@ export class Game {
     this.nextPieces = this.nextPieces.concat(this.newPiece());
     this.startAPiece();
     this.heldPiece = new Piece(new Tetromino('empty', x => [], 'white'), this.rows, this.cols);
+    this.isGameOver = false;
     return this;
   }
   startAPiece() {
@@ -172,7 +174,7 @@ export class Game {
     return map[numRows];
   }
 
-  isGameOver() {
+  isGameLost() {
     return this.rubble.some(point => point.row === 1);
   }
 
@@ -183,7 +185,10 @@ export class Game {
     this.score += this.calculateAward(completedRows.length);
     this.lines += completedRows.length;
 
-    if (!this.isGameOver()) {
+    if (this.isGameLost()) {
+      this.isGameOver = true;
+    } 
+    else {
       this.startAPiece();
     }
   }
@@ -200,6 +205,10 @@ export class Game {
     return this;
   }
   fall() {
+    if(this.isGameOver) {
+      return this;
+    }
+
     while(!this.PieceOverlapsRubble(this.fallingPiece) && !this.PieceIsOutOfBounds(this.fallingPiece)) {
       this.fallingPiece.fallOne();
     }

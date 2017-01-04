@@ -2,3 +2,5 @@ node_modules
 *.log
 flask
 app/__pycache__
+app/templates/index.html
+app/static/bundle.js

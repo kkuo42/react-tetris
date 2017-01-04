@@ -9,8 +9,8 @@ function reducer(state = new Model.Game(), action) {
   switch (action.type) {
       case 'TICK':
         const revState = state.tick();
-        if (!revState.isGameOver()) {
-          setTimeout(() => store.dispatch({ type: 'TICK' }),500);
+        if (!revState.isGameOver) {
+          timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
         }
         return revState;
       case 'ROTATE':
@@ -26,8 +26,9 @@ function reducer(state = new Model.Game(), action) {
       case 'HOLD':
         return state.hold();
       case 'START':
-        if(state.isGameOver()) {
-          setTimeout(() => store.dispatch({ type: 'TICK' }),500);
+        if(state.isGameOver) {
+          clearTimeout(timer)
+          timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
           return state.startNextGame();
         };
       default: return state;
@@ -47,4 +48,4 @@ store.subscribe(() => {
   ReactDOM.render(<Components.GameView game={store.getState()} />, document.getElementById('container'));
 });
 
-setTimeout(() => store.dispatch({ type: 'TICK' }),500);
+let timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);

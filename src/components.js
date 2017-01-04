@@ -6,11 +6,16 @@ var count = 0;
 export var GameView = React.createClass({
   render: function () {
     return <div className="border" style={{width: this.props.game.cols*25-1, height: this.props.game.rows*25-1}}>
-      { this.props.game.isGameOver() ?
-        <span>
-          <h1 style={{margin:'20px'}}>GAME OVER</h1>
-          <div style={{margin:'40px'}}>Press Enter to play again</div>
-        </span> : 
+      { this.props.game.isGameOver ? 
+          this.props.game.isGameLost() ? 
+          <span>
+            <h1 style={{margin:'22px'}}>GAME OVER</h1>
+            <div style={{margin:'42px'}}>Press Enter to play again</div>
+          </span> : 
+          <span>
+            <h1 style={{margin:'64px'}}>TETRIS</h1>
+            <div style={{margin:'62px'}}>Press Enter to play</div>
+          </span> :
         <span>
           <PhantomView piece={this.props.game.phantomPiece} />
           <PieceView piece={this.props.game.fallingPiece} />
