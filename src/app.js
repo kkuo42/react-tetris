@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM  from 'react-dom';
-import * as Components from './components';
+import {GameView} from './components';
 import * as Model from './model';
 import {createStore} from 'redux';
 import * as Mousetrap from 'mousetrap';
@@ -44,8 +44,8 @@ Mousetrap.bind('right', function() { store.dispatch({type:'RIGHT'}); });
 Mousetrap.bind('down', function() { store.dispatch({type:'DOWN'}); });
 
 let store = createStore(reducer);
-store.subscribe(() => {
-  ReactDOM.render(<Components.GameView game={store.getState()} />, document.getElementById('container'));
+store.subscribe(() => { 
+  ReactDOM.render(<GameView game={store.getState()} />, document.getElementById('container'));
 });
 
-let timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
+let timer = setTimeout(() => store.dispatch({ type: 'TICK' }), 0);

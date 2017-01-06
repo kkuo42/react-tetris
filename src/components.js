@@ -3,8 +3,37 @@ import * as ReactDOM from 'react-dom';
 
 var count = 0;
 
-export var GameView = React.createClass({
-  render: function () {
+class NameForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {value: ''};
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({value: event.target.value});
+  }
+
+  handleSubmit(event) {
+    alert('Name: ' + this.state.value + " Score: " + this.props.score);
+    event.preventDefault();
+  }
+
+  render() {
+    return <form onSubmit={this.handleSubmit}>
+      <label>
+        Name:
+        <input type="text" value={this.state.value} onChange={this.handleChange} />
+      </label>
+      <input type="submit" value="Submit" />
+    </form>;
+  }
+}
+
+export class GameView extends React.Component {
+  render() {
     let s = {
       width: this.props.game.cols*25-1, 
       height: this.props.game.rows*25-1,
@@ -14,6 +43,7 @@ export var GameView = React.createClass({
           this.props.game.isGameLost() ?  
           <span>
             <h1 style={{margin:'22px'}}>GAME OVER</h1>
+            <NameForm score={this.props.game.score} />
             <div style={{margin:'42px'}}>Press Enter to play again</div>
           </span> : 
           <span>
@@ -31,10 +61,10 @@ export var GameView = React.createClass({
       <ScoreView score={this.props.game.score} lines={this.props.game.lines} />
     </div>;
   }
-});
+}
 
-export var PhantomView = React.createClass({
-  render: function () {
+class PhantomView extends React.Component {
+  render() {
     return <div>
       {this.props.piece.points().map(sq => 
         <Square 
@@ -46,19 +76,19 @@ export var PhantomView = React.createClass({
       )}
     </div>;
   }
-});
+}
 
-export var HoldView = React.createClass({
-  render: function() {
+class HoldView extends React.Component {
+  render() {
     return <div className="hold">
       <div>HOLD</div>
       <HoldPieceView piece={this.props.piece} />
     </div>;
   }
-});
+}
 
-export var HoldPieceView = React.createClass({
-  render: function() {
+class HoldPieceView extends React.Component {
+  render() {
     return <div className="holdPiece">
       {this.props.piece.shape.pointsRotated('N').map(sq => 
         <Square 
@@ -70,10 +100,10 @@ export var HoldPieceView = React.createClass({
       )}
     </div>
   }
-});
+}
 
-export var PieceView = React.createClass({
-  render: function () {
+class PieceView extends React.Component {
+  render() {
     return <div>
       {this.props.piece.points().map(sq => 
         <Square 
@@ -85,10 +115,10 @@ export var PieceView = React.createClass({
       )}
     </div>;
   }
-});
+}
 
-export var RubbleView = React.createClass({
-  render: function () {
+class RubbleView extends React.Component{
+  render() {
     return <span>
       {this.props.rubble.map(sq => 
         <Square 
@@ -100,19 +130,19 @@ export var RubbleView = React.createClass({
       )}
     </span>;
   }
-});
+}
 
-export var ScoreView = React.createClass({
-  render: function () {
+class ScoreView extends React.Component{
+  render() {
     return <div className='score-display'>
       <div>Score: {this.props.score}</div>
       <div>Lines: {this.props.lines}</div>
     </div>;
   }
-})
+}
 
-export var NextView = React.createClass({
-  render: function () {
+class NextView extends React.Component{
+  render() {
     return <div className="next">
       <div>NEXT</div>
       { this.props.nextPieces.map((piece, index) => 
@@ -124,10 +154,10 @@ export var NextView = React.createClass({
       )}
     </div>;
   }
-})
+}
 
-export var NextPieceView = React.createClass({
-  render: function() { 
+class NextPieceView extends React.Component {
+  render() { 
     let s = {
       position: 'relative',
       top: this.props.num*75 + 'px',
@@ -143,10 +173,10 @@ export var NextPieceView = React.createClass({
       )}
     </div>;
   }
-});
+}
 
-export var Square = React.createClass({
-  render: function() {
+class Square extends React.Component {
+  render() {
     let s = {
       left: (this.props.col-1) * 25 + 'px',
       top: ((this.props.row-1) * 25) + 'px',
@@ -155,4 +185,6 @@ export var Square = React.createClass({
 
     return <div className="square" style={s}></div>;
   }
-});
+}
+
+

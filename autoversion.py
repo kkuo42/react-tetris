@@ -1,3 +1,7 @@
+"""
+Script to increment the version number of modified css file or js bundle 
+based upon the flag set. Default is js.
+"""
 import re
 import argparse
 
@@ -10,14 +14,14 @@ f = open('app/templates/index.html','r+')
 contents = f.read().splitlines()
 replaced = []
 
-# Increments the version number of the css/js flag
+# Reads through each line and searches for cs/jss version 
 for line in contents:
-    rawString = args.mode+r'\?version=\d+'
-    if re.search(rawString, line):
+    # Increments the version number of the css/js flag
+    if re.search(args.mode+r'\?version=\d+', line):
         matches = re.findall(r'version=\d+', line)
-        numbers = re.findall(r'\d+', matches[0])
-        numbers[0] = str(int(numbers[0])+1)
-        newLine = re.sub(r'version=\d+', 'version='+numbers[0], line)
+        nums = re.findall(r'\d+', matches[0])
+        numPlus = str(int(nums[0])+1)
+        newLine = re.sub(r'version=\d+', 'version='+numPlus, line)
         replaced.append(newLine)
     else:
         replaced.append(line)
