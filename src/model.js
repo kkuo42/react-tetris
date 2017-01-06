@@ -1,13 +1,13 @@
 import * as _ from 'underscore';
 
-export class Point {
+class Point {
   constructor(row,col,color) {
     this.row = row;
     this.col = col;
     this.color = color;
   }
   add(otherPoint) {
-    return new Point(this.row -1 + otherPoint.row, this.col - 1 + otherPoint.col);
+    return new Point(this.row-1 + otherPoint.row, this.col-1 + otherPoint.col);
   }
   addRow(rowNum) {
     return new Point(this.row -1 + rowNum, this.col);
@@ -20,7 +20,7 @@ export class Point {
   }
 }
 
-export class Tetromino {
+class Tetromino {
   constructor(name, rotator, color) {
     this.name = name; 
     this.rotator = rotator;
@@ -32,7 +32,7 @@ export class Tetromino {
 }
 
 // an instance of a tetromino on the board
-export class Piece {
+class Piece {
   constructor(shape, rows, cols, offset = new Point(1,4), rotation = 'N') {
     this.shape = shape;
     this.rows = rows;
@@ -42,7 +42,11 @@ export class Piece {
   }  
 
   points() {
-    return this.shape.pointsRotated(this.rotation).map(point => point.add(this.offset)).map(point => point.addColor(this.shape.color));
+    return (
+      this.shape.pointsRotated(this.rotation)
+                .map(point => point.add(this.offset))
+                .map(point => point.addColor(this.shape.color))
+    );
   }
   pointsNoOffset() {
     return this.shape.pointsRotated(this.rotation);
@@ -100,28 +104,34 @@ export class Game {
     this.nextPieces = this.nextPieces.concat(this.newPiece());
     this.nextPieces = this.nextPieces.concat(this.newPiece());
     this.startAPiece();
-    this.heldPiece = new Piece(new Tetromino('empty', x => [], 'white'), this.rows, this.cols);
     this.isGameOver = false;
+    this.heldPiece = new Piece(new Tetromino('empty', x => [], 'white'), 
+                               this.rows, this.cols);
     return this;
   }
+
   startAPiece() {
     this.usedHold = false;
     this.fallingPiece = this.nextPieces.shift();
     this.nextPieces = this.nextPieces.concat(this.newPiece());
     this.calculatePhantom();
   }
+
   newPiece() {
     return new Piece(shapes.selectRandom(), this.rows, this.cols);
   }
 
   calculatePhantom() {
-    this.phantomPiece = new Piece(this.fallingPiece.shape, this.rows, this.cols, this.fallingPiece.offset, this.fallingPiece.rotation);
-    while(!this.PieceOverlapsRubble(this.phantomPiece) && !this.PieceIsOutOfBounds(this.phantomPiece)) {
+    this.phantomPiece = new Piece(this.fallingPiece.shape, this.rows, 
+                                  this.cols, this.fallingPiece.offset, 
+                                  this.fallingPiece.rotation);
+    while(!this.PieceOverlapsRubble(this.phantomPiece) && 
+          !this.PieceIsOutOfBounds(this.phantomPiece)) {
       this.phantomPiece.fallOne();
     }
     this.phantomPiece.liftOne();
-
   }
+
   hold() {
     if(this.usedHold !== true) {
       const prev = this.heldPiece;
@@ -137,6 +147,7 @@ export class Game {
     }
     return this;
   }
+
   tick() {
     if (this.fallingPiece.maxRow() == this.rows) {
       this.convertToRubble();
@@ -146,7 +157,8 @@ export class Game {
       this.convertToRubble();
     };
 
-    this.transactionDo(()=>this.fallingPiece.fallOne(), ()=> this.fallingPiece.liftOne());
+    this.transactionDo(() => this.fallingPiece.fallOne(),
+                       () => this.fallingPiece.liftOne());
     return this;
   }
 
@@ -193,31 +205,32 @@ export class Game {
     }
   }
   rotate() {
-    this.transactionDo(()=>this.fallingPiece.rotate(), ()=> this.fallingPiece.unRotate());
+    this.transactionDo(() => this.fallingPiece.rotate(), 
+                       () => this.fallingPiece.unRotate());
     return this;
   }
   left() {
-    this.transactionDo(()=>this.fallingPiece.left(), ()=> this.fallingPiece.right());
+    this.transactionDo(() => this.fallingPiece.left(), 
+                       () => this.fallingPiece.right());
     return this;
   }
   right() {
-    this.transactionDo(()=>this.fallingPiece.right(), ()=> this.fallingPiece.left());
+    this.transactionDo(() => this.fallingPiece.right(),
+                       () => this.fallingPiece.left());
     return this;
   }
   fall() {
-    if(this.isGameOver) {
-      return this;
+    if(!this.isGameOver) {
+      while(!this.PieceOverlapsRubble(this.fallingPiece) && 
+            !this.PieceIsOutOfBounds(this.fallingPiece)) {
+        this.fallingPiece.fallOne();
+      }
+      this.fallingPiece.liftOne();
+      this.convertToRubble();
     }
-
-    while(!this.PieceOverlapsRubble(this.fallingPiece) && !this.PieceIsOutOfBounds(this.fallingPiece)) {
-      this.fallingPiece.fallOne();
-    }
-
-    this.fallingPiece.liftOne();
-    this.convertToRubble();
-
     return this;
   }
+
   PieceIsOutOfBounds(piece) {
     return piece.minCol() < 1 ||
       piece.maxCol() > this.cols ||
@@ -228,7 +241,8 @@ export class Game {
   }
   transactionDo(thing, compensation) {
     thing();
-    if (this.PieceIsOutOfBounds(this.fallingPiece) || this.PieceOverlapsRubble(this.fallingPiece)) {
+    if (this.PieceIsOutOfBounds(this.fallingPiece) || 
+        this.PieceOverlapsRubble(this.fallingPiece)) {
       compensation();
     }
     this.calculatePhantom();
@@ -236,8 +250,9 @@ export class Game {
 }
 
 // dictionary of shape type to square offsets
-export var shapes = {
-  'O': new Tetromino('O', rotation => [new Point(1,1),new Point(1,2), new Point(2,1),new Point(2,2)], 'yellow'),
+var shapes = {
+  'O': new Tetromino('O', rotation => 
+    [new Point(1,1),new Point(1,2), new Point(2,1),new Point(2,2)], 'yellow'),
   'I': new Tetromino('I', rotation => {
     switch (rotation) {
       case 'N': return [new Point(2,1), new Point(2,2),new Point(2,3), new Point(2,4)];

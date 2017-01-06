@@ -1,11 +1,11 @@
 import * as React from 'react';
 import * as ReactDOM  from 'react-dom';
 import {GameView} from './components';
-import * as Model from './model';
+import {Game} from './model';
 import {createStore} from 'redux';
 import * as Mousetrap from 'mousetrap';
 
-function reducer(state = new Model.Game(), action) {
+function reducer(state = new Game(), action) {
   switch (action.type) {
       case 'TICK':
         const revState = state.tick();

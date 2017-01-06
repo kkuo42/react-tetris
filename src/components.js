@@ -182,7 +182,6 @@ class Square extends React.Component {
       top: ((this.props.row-1) * 25) + 'px',
       backgroundColor: this.props.color,
     };
-
     return <div className="square" style={s}></div>;
   }
 }
