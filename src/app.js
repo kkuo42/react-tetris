@@ -1,37 +1,59 @@
 import * as React from 'react';
-import * as ReactDOM  from 'react-dom';
-import {GameView} from './components';
-import {Game} from './model';
-import {createStore} from 'redux';
+import { render } from 'react-dom';
+import { MainView } from './components';
+import { Game } from './model';
+import { createStore } from 'redux';
 import * as Mousetrap from 'mousetrap';
 
-function reducer(state = new Game(), action) {
+const initialState = {
+  status: 'splash'
+}
+
+function reducer(state = initialState, action) {
   switch (action.type) {
       case 'TICK':
-        const revState = state.tick();
-        if (!revState.isGameOver) {
+        const rev = state.game.tick();
+        if (!rev.isGameOver) {
           timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
         }
-        return revState;
+        return Object.assign( {}, state, {
+          game: rev
+        });
       case 'ROTATE':
-        return state.rotate();
+        return Object.assign( {}, state, {
+          game: state.game.rotate()
+        });
       case 'LEFT':
-        return state.left();
+        return Object.assign( {}, state, {
+          game: state.game.left()
+        });
       case 'RIGHT':
-        return state.right();
+        return Object.assign( {}, state, {
+          game: state.game.right()
+        });
       case 'DOWN':
-        return state.tick();
+        return Object.assign( {}, state, {
+          game: state.game.tick()
+        });
       case 'FALL':
-        return state.fall();
+        return Object.assign( {}, state, {
+          game: state.game.fall()
+        });
       case 'HOLD':
-        return state.hold();
+        return Object.assign( {}, state, {
+          game: state.game.hold()
+        });
       case 'START':
-        if(state.isGameOver) {
+        if(state.status === 'splash' || state.status === 'playing') {
           clearTimeout(timer)
           timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
-          return state.startNextGame();
+          state.game = new Game();
+          return Object.assign( {}, state, {
+            status: 'playing',
+            game: state.game.startNextGame()
+          });
         };
-      default: return state;
+      default: return state; 
   }
 }
 
@@ -43,9 +65,11 @@ Mousetrap.bind('left', function() { store.dispatch({type:'LEFT'}); });
 Mousetrap.bind('right', function() { store.dispatch({type:'RIGHT'}); });
 Mousetrap.bind('down', function() { store.dispatch({type:'DOWN'}); });
 
+render(<MainView passedState={initialState} />, document.getElementById('container'));
+
 let store = createStore(reducer);
 store.subscribe(() => { 
-  ReactDOM.render(<GameView game={store.getState()} />, document.getElementById('container'));
+  render(<MainView passedState={store.getState()} />, document.getElementById('container'));
 });
 
-let timer = setTimeout(() => store.dispatch({ type: 'TICK' }), 0);
+let timer = {};

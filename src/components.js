@@ -4,6 +4,29 @@ import {NameForm} from './nameform';
 
 var count = 0;
 
+export class MainView extends React.Component {
+  render() {
+    let s = {
+      width: 250, 
+      height: 500,
+    };
+    
+    if (this.props.passedState.status === 'splash') {
+      return <div className="border" style={s}>
+        <h1 style={{margin:'64px'}}>TETRIS</h1>
+        <div style={{margin:'62px'}}>Press Enter to play</div>
+      </div>;
+    }
+    else if (this.props.passedState.status === 'playing') {
+        return <div className="border" style={s}>
+          <GameView game={this.props.passedState.game} />
+        </div>; 
+      
+    }
+
+  }
+}
+
 export class GameView extends React.Component {
   render() {
     let s = {
@@ -12,16 +35,11 @@ export class GameView extends React.Component {
     };
     return <div className="border" style={s}>
       { this.props.game.isGameOver ? 
-          this.props.game.isGameLost() ?  
-          <span>
+        <span>
             <h1 style={{margin:'22px'}}>GAME OVER</h1>
             <NameForm score={this.props.game.score} />
             <div style={{margin:'42px'}}>Press Enter to play again</div>
-          </span> : 
-          <span>
-            <h1 style={{margin:'64px'}}>TETRIS</h1>
-            <div style={{margin:'62px'}}>Press Enter to play</div>
-          </span> :
+        </span> : 
         <span>
           <PhantomView piece={this.props.game.phantomPiece} />
           <PieceView piece={this.props.game.fallingPiece} />

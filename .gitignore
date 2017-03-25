@@ -4,3 +4,5 @@ flask
 app/__pycache__
 app/templates/index.html
 app/static/bundle.js
+app/*.pyc
+.vscode

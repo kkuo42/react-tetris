@@ -14,5 +14,7 @@ Setup
 --------------
 1. Setup npm, venv, install flask
 2. Run gulp to automatically rebuild javascript bundle upon changes
+    npm run away
 3. Run flask to host game
+    ./run.py
 
