@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
 
 export class NameForm extends React.Component {
   constructor(props) {

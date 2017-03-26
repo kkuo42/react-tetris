@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { render } from 'react-dom';
-import { MainView } from './components';
+import { MainView } from './components/MainView';
 import { Game } from './model';
 import { createStore } from 'redux';
 import * as Mousetrap from 'mousetrap';
@@ -10,15 +10,61 @@ const initialState = {
 }
 
 function reducer(state = initialState, action) {
-  switch (action.type) {
+  if(state.status === 'splash') {
+    switch(action.type) {
+      case 'START':
+        timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
+        state.game = new Game();
+        return Object.assign( {}, state, {
+          status: 'playing',
+          game: state.game.startNextGame()
+        });
+      default: return state; 
+    }
+  }
+
+  else if(state.status === 'paused') {
+    switch(action.type) {
+      case 'START':
+        clearTimeout(timer)
+        timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
+        return Object.assign( {}, state, {
+          status: 'playing',
+        });
+      default: return state; 
+    }
+  }
+
+  else if(state.status === 'gameover') {
+    switch(action.type) {
+      case 'START':
+        clearTimeout(timer)
+        timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
+        state.game = new Game();
+        return Object.assign( {}, state, {
+          status: 'playing',
+          game: state.game.startNextGame()
+        });
+      default: return state; 
+    }
+  }
+
+  else {
+    switch (action.type) {
       case 'TICK':
         const rev = state.game.tick();
         if (!rev.isGameOver) {
           timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
+          return Object.assign( {}, state, {
+            game: rev
+          });
         }
-        return Object.assign( {}, state, {
-          game: rev
-        });
+        else {
+          return Object.assign( {}, state, {
+            status: 'gameover',
+            game: rev
+          });
+        }
       case 'ROTATE':
         return Object.assign( {}, state, {
           game: state.game.rotate()
@@ -44,16 +90,20 @@ function reducer(state = initialState, action) {
           game: state.game.hold()
         });
       case 'START':
-        if(state.status === 'splash' || state.status === 'playing') {
-          clearTimeout(timer)
-          timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
-          state.game = new Game();
+        if(!state.game.isGameOver) {
           return Object.assign( {}, state, {
-            status: 'playing',
-            game: state.game.startNextGame()
+            status: 'paused'
           });
-        };
+        }
+        clearTimeout(timer)
+        timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
+        state.game = new Game();
+        return Object.assign( {}, state, {
+          status: 'playing',
+          game: state.game.startNextGame()
+        });
       default: return state; 
+    }
   }
 }
 

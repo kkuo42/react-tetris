@@ -11,6 +11,6 @@ gulp.task('autocss', shell.task([
 ]));
 
 gulp.task('default', function() {
-    gulp.watch(['*.js', 'src/*.js', 'test/*.js'], ['buildandtest']);
+    gulp.watch(['*.js', 'src/*.js', 'src/components/*.js', 'test/*.js'], ['buildandtest']);
     gulp.watch(['app/static/*.css'], ['autocss']);
 });

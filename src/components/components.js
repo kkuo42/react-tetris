@@ -1,54 +1,17 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import {NameForm} from './nameform';
+import * as React from 'react'; 
 
 var count = 0;
 
-export class MainView extends React.Component {
-  render() {
-    let s = {
-      width: 250, 
-      height: 500,
-    };
-    
-    if (this.props.passedState.status === 'splash') {
-      return <div className="border" style={s}>
-        <h1 style={{margin:'64px'}}>TETRIS</h1>
-        <div style={{margin:'62px'}}>Press Enter to play</div>
-      </div>;
-    }
-    else if (this.props.passedState.status === 'playing') {
-        return <div className="border" style={s}>
-          <GameView game={this.props.passedState.game} />
-        </div>; 
-      
-    }
-
-  }
-}
-
 export class GameView extends React.Component {
   render() {
-    let s = {
-      width: this.props.game.cols*25-1, 
-      height: this.props.game.rows*25-1,
-    };
-    return <div className="border" style={s}>
-      { this.props.game.isGameOver ? 
-        <span>
-            <h1 style={{margin:'22px'}}>GAME OVER</h1>
-            <NameForm score={this.props.game.score} />
-            <div style={{margin:'42px'}}>Press Enter to play again</div>
-        </span> : 
-        <span>
-          <PhantomView piece={this.props.game.phantomPiece} />
-          <PieceView piece={this.props.game.fallingPiece} />
-          <RubbleView rubble={this.props.game.rubble} />
-          <NextView nextPieces={this.props.game.nextPieces} />
-          <HoldView piece={this.props.game.heldPiece} />
-        </span>
-      }
-      <ScoreView score={this.props.game.score} lines={this.props.game.lines} />
+    return <div>
+      <span>
+        <PhantomView piece={this.props.game.phantomPiece} />
+        <PieceView piece={this.props.game.fallingPiece} />
+        <RubbleView rubble={this.props.game.rubble} />
+        <NextView nextPieces={this.props.game.nextPieces} />
+        <HoldView piece={this.props.game.heldPiece} />
+      </span>
     </div>;
   }
 }
@@ -122,15 +85,6 @@ class RubbleView extends React.Component{
   }
 }
 
-class ScoreView extends React.Component{
-  render() {
-    return <div className='score-display'>
-      <div>Score: {this.props.score}</div>
-      <div>Lines: {this.props.lines}</div>
-    </div>;
-  }
-}
-
 class NextView extends React.Component{
   render() {
     return <div className="next">
@@ -175,5 +129,3 @@ class Square extends React.Component {
     return <div className="square" style={s}></div>;
   }
 }
-
-
