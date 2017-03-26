@@ -48,9 +48,6 @@ class Piece {
                 .map(point => point.addColor(this.shape.color))
     );
   }
-  pointsNoOffset() {
-    return this.shape.pointsRotated(this.rotation);
-  }
   maxRow() {
     return Math.max.apply(null, this.points().map(point => point.row));
   }
@@ -64,7 +61,8 @@ class Piece {
     this.rotation = Piece.rotations()[(Piece.rotations().indexOf(this.rotation)+1) % 4];
   }
   unRotate() {
-    this.rotation = Piece.rotations()[(Piece.rotations().indexOf(this.rotation)-1) % 4];
+    // Uses +3 instead of -1 because negative module doesn't wrap around
+    this.rotation = Piece.rotations()[(Piece.rotations().indexOf(this.rotation)+3) % 4];
   }
   hasPoint(point) {
     return this.points().some(item => item.sameAs(point));
@@ -80,7 +78,7 @@ class Piece {
   }
   right() {
     this.offset = new Point(this.offset.row, this.offset.col+1);
-  }
+  } 
   static rotations() {
     return ['N','E','S','W'];
   }
@@ -205,8 +203,17 @@ export class Game {
     }
   }
   rotate() {
-    this.transactionDo(() => this.fallingPiece.rotate(), 
-                       () => this.fallingPiece.unRotate());
+    this.fallingPiece.rotate();
+    while(this.fallingPiece.minCol() < 1) {
+      this.fallingPiece.right();
+    }
+    while(this.fallingPiece.maxCol() > this.cols) {
+      this.fallingPiece.left();
+    }
+    if (this.PieceIsOutOfBounds(this.fallingPiece) || 
+        this.PieceOverlapsRubble(this.fallingPiece)) {
+      this.fallingPiece.unRotate();
+    }
     return this;
   }
   left() {
