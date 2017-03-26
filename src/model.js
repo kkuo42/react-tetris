@@ -202,6 +202,7 @@ export class Game {
       this.startAPiece();
     }
   }
+
   rotate() {
     this.fallingPiece.rotate();
     while(this.fallingPiece.minCol() < 1) {
@@ -214,18 +215,22 @@ export class Game {
         this.PieceOverlapsRubble(this.fallingPiece)) {
       this.fallingPiece.unRotate();
     }
+    this.calculatePhantom();
     return this;
   }
+
   left() {
     this.transactionDo(() => this.fallingPiece.left(), 
                        () => this.fallingPiece.right());
     return this;
   }
+
   right() {
     this.transactionDo(() => this.fallingPiece.right(),
                        () => this.fallingPiece.left());
     return this;
   }
+
   fall() {
     if(!this.isGameOver) {
       while(!this.PieceOverlapsRubble(this.fallingPiece) && 
@@ -243,9 +248,11 @@ export class Game {
       piece.maxCol() > this.cols ||
       piece.maxRow() > this.rows;
   }
+
   PieceOverlapsRubble(piece) {
     return piece.points().some(p => this.rubble.some(r => r.sameAs(p)));
   }
+
   transactionDo(thing, compensation) {
     thing();
     if (this.PieceIsOutOfBounds(this.fallingPiece) || 
@@ -254,6 +261,7 @@ export class Game {
     }
     this.calculatePhantom();
   }
+  
 }
 
 // dictionary of shape type to square offsets

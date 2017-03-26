@@ -9,103 +9,73 @@ const initialState = {
   status: 'splash'
 }
 
+function updateObj(oldObject, newValues) {
+  return Object.assign({}, oldObject, newValues);
+}
+
 function reducer(state = initialState, action) {
   if(state.status === 'splash') {
-    switch(action.type) {
-      case 'START':
-        timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
-        state.game = new Game();
-        return Object.assign( {}, state, {
-          status: 'playing',
-          game: state.game.startNextGame()
-        });
-      default: return state; 
+    if(action.type === 'START') {
+      timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
+      state.game = new Game();
+      return updateObj( state, {
+        status: 'playing',
+        game: state.game.startNextGame()
+      });
     }
+    else return state;
   }
 
   else if(state.status === 'paused') {
-    switch(action.type) {
-      case 'START':
-        clearTimeout(timer)
-        timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
-        return Object.assign( {}, state, {
-          status: 'playing',
-        });
-      default: return state; 
+    if(action.type === 'START') {
+      clearTimeout(timer)
+      timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
+      return updateObj(state, {status: 'playing'});
     }
+    else return state; 
   }
 
   else if(state.status === 'gameover') {
-    switch(action.type) {
-      case 'START':
-        clearTimeout(timer)
-        timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
-        state.game = new Game();
-        return Object.assign( {}, state, {
-          status: 'playing',
-          game: state.game.startNextGame()
-        });
-      default: return state; 
+    if(action.type === 'START') {
+      clearTimeout(timer)
+      timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
+      state.game = new Game();
+      return updateObj( state, {
+        status: 'playing',
+        game: state.game.startNextGame()
+      });
     }
+    else return state; 
   }
 
   else {
     switch (action.type) {
       case 'TICK':
         const rev = state.game.tick();
-        if (!rev.isGameOver) {
-          timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
-          return Object.assign( {}, state, {
-            game: rev
-          });
+        if (rev.isGameOver) {
+          return updateObj(state, {status: 'gameover', game: rev});
         }
-        else {
-          return Object.assign( {}, state, {
-            status: 'gameover',
-            game: rev
-          });
-        }
-      case 'ROTATE':
-        return Object.assign( {}, state, {
-          game: state.game.rotate()
-        });
-      case 'LEFT':
-        return Object.assign( {}, state, {
-          game: state.game.left()
-        });
-      case 'RIGHT':
-        return Object.assign( {}, state, {
-          game: state.game.right()
-        });
-      case 'DOWN':
-        return Object.assign( {}, state, {
-          game: state.game.tick()
-        });
-      case 'FALL':
-        return Object.assign( {}, state, {
-          game: state.game.fall()
-        });
-      case 'HOLD':
-        return Object.assign( {}, state, {
-          game: state.game.hold()
-        });
-      case 'START':
-        if(!state.game.isGameOver) {
-          return Object.assign( {}, state, {
-            status: 'paused'
-          });
-        }
-        clearTimeout(timer)
         timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
-        state.game = new Game();
-        return Object.assign( {}, state, {
-          status: 'playing',
-          game: state.game.startNextGame()
-        });
+        return updateObj(state, {game: rev});
+      case 'ROTATE':
+        return updateObj(state, {game: state.game.rotate()});
+      case 'LEFT':
+        return updateObj(state, {game: state.game.left()});
+      case 'RIGHT':
+        return updateObj(state, {game: state.game.right()});
+      case 'DOWN':
+        return updateObj(state, {game: state.game.tick()});
+      case 'FALL':
+        return updateObj(state, {game: state.game.fall()});
+      case 'HOLD':
+        return updateObj(state, {game: state.game.hold()});
+      case 'START':
+        return updateObj(state, {status: 'paused'});
       default: return state; 
     }
   }
 }
+
 
 Mousetrap.bind('shift', function() { store.dispatch({type:'HOLD'}); });
 Mousetrap.bind('enter', function() { store.dispatch({type:'START'}); });
