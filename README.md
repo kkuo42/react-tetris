@@ -12,12 +12,13 @@ Space to drop piece
 
 Setup
 --------------
-1. Setup npm, venv, install flask
-2. Run gulp to automatically rebuild javascript bundle upon changes
+Install npm, venv, flask.
+
+Run gulp to automatically rebuild javascript bundle upon changes:
 
     npm run away
 
-3. Run flask to host game
+Run flask to host game:
 
     ./run.py
 
