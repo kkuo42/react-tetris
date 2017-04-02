@@ -1,95 +1,10 @@
 import * as _ from 'underscore';
 
-class Point {
-  constructor(row,col,color) {
-    this.row = row;
-    this.col = col;
-    this.color = color;
-  }
-  add(otherPoint) {
-    return new Point(this.row-1 + otherPoint.row, this.col-1 + otherPoint.col);
-  }
-  addRow(rowNum) {
-    return new Point(this.row -1 + rowNum, this.col);
-  }
-  addColor(color) {
-    return new Point(this.row, this.col, color);
-  }
-  sameAs(p2) {
-    return this.row === p2.row && this.col === p2.col;
-  }
-}
-
-class Tetromino {
-  constructor(name, rotator, color) {
-    this.name = name; 
-    this.rotator = rotator;
-    this.color = color;
-  }
-  pointsRotated(rotation) {
-    return this.rotator(rotation);
-  }
-}
-
-// an instance of a tetromino on the board
-class Piece {
-  constructor(shape, rows, cols, offset = new Point(1,4), rotation = 'N') {
-    this.shape = shape;
-    this.rows = rows;
-    this.cols = cols;
-    this.offset = offset;
-    this.rotation = rotation;
-  }  
-
-  points() {
-    return (
-      this.shape.pointsRotated(this.rotation)
-                .map(point => point.add(this.offset))
-                .map(point => point.addColor(this.shape.color))
-    );
-  }
-  maxRow() {
-    return Math.max.apply(null, this.points().map(point => point.row));
-  }
-  maxCol() {
-    return Math.max.apply(null, this.points().map(point => point.col));
-  }
-  minCol() {
-    return Math.min.apply(null, this.points().map(point => point.col));
-  }
-  rotate() {
-    this.rotation = Piece.rotations()[(Piece.rotations().indexOf(this.rotation)+1) % 4];
-  }
-  unRotate() {
-    // Uses +3 instead of -1 because negative module doesn't wrap around
-    this.rotation = Piece.rotations()[(Piece.rotations().indexOf(this.rotation)+3) % 4];
-  }
-  hasPoint(point) {
-    return this.points().some(item => item.sameAs(point));
-  }
-  fallOne() {
-    this.offset = new Point(this.offset.row+1, this.offset.col);
-  }
-  liftOne() {
-    this.offset = new Point(this.offset.row-1, this.offset.col);
-  }
-  left() {
-    this.offset = new Point(this.offset.row, this.offset.col-1);
-  }
-  right() {
-    this.offset = new Point(this.offset.row, this.offset.col+1);
-  } 
-  static rotations() {
-    return ['N','E','S','W'];
-  }
-}
-
 export class Game {
   constructor() {
     this.rows = 20;
     this.cols = 10;
     this.startNextGame();
-    this.isGameOver = true;
   }
 
   startNextGame() {
@@ -101,7 +16,6 @@ export class Game {
     this.nextPieces = this.nextPieces.concat(this.newPiece());
     this.nextPieces = this.nextPieces.concat(this.newPiece());
     this.startAPiece();
-    this.isGameOver = false;
     this.heldPiece = new Piece(new Tetromino('empty', x => [], 'white'), 
                                this.rows, this.cols);
     return this;
@@ -194,10 +108,7 @@ export class Game {
     this.score += this.calculateAward(completedRows.length);
     this.lines += completedRows.length;
 
-    if (this.isGameLost()) {
-      this.isGameOver = true;
-    } 
-    else {
+    if (!this.isGameLost()) {
       this.startAPiece();
     }
   }
@@ -231,14 +142,12 @@ export class Game {
   }
 
   fall() {
-    if(!this.isGameOver) {
-      while(!this.PieceOverlapsRubble(this.fallingPiece) && 
-            !this.PieceIsOutOfBounds(this.fallingPiece)) {
-        this.fallingPiece.fallOne();
-      }
-      this.fallingPiece.liftOne();
-      this.convertToRubble();
+    while(!this.PieceOverlapsRubble(this.fallingPiece) && 
+          !this.PieceIsOutOfBounds(this.fallingPiece)) {
+      this.fallingPiece.fallOne();
     }
+    this.fallingPiece.liftOne();
+    this.convertToRubble();
     return this;
   }
 
@@ -261,6 +170,90 @@ export class Game {
     this.calculatePhantom();
   }
   
+}
+
+class Point {
+  constructor(row,col,color) {
+    this.row = row;
+    this.col = col;
+    this.color = color;
+  }
+  add(otherPoint) {
+    return new Point(this.row-1 + otherPoint.row, this.col-1 + otherPoint.col);
+  }
+  addRow(rowNum) {
+    return new Point(this.row -1 + rowNum, this.col);
+  }
+  addColor(color) {
+    return new Point(this.row, this.col, color);
+  }
+  sameAs(p2) {
+    return this.row === p2.row && this.col === p2.col;
+  }
+}
+
+class Tetromino {
+  constructor(name, rotator, color) {
+    this.name = name; 
+    this.rotator = rotator;
+    this.color = color;
+  }
+  pointsRotated(rotation) {
+    return this.rotator(rotation);
+  }
+}
+
+// an instance of a tetromino on the board
+class Piece {
+  constructor(shape, rows, cols, offset = new Point(1,4), rotation = 'N') {
+    this.shape = shape;
+    this.rows = rows;
+    this.cols = cols;
+    this.offset = offset;
+    this.rotation = rotation;
+  }  
+
+  points() {
+    return (
+      this.shape.pointsRotated(this.rotation)
+                .map(point => point.add(this.offset))
+                .map(point => point.addColor(this.shape.color))
+    );
+  }
+  maxRow() {
+    return Math.max.apply(null, this.points().map(point => point.row));
+  }
+  maxCol() {
+    return Math.max.apply(null, this.points().map(point => point.col));
+  }
+  minCol() {
+    return Math.min.apply(null, this.points().map(point => point.col));
+  }
+  rotate() {
+    this.rotation = Piece.rotations()[(Piece.rotations().indexOf(this.rotation)+1) % 4];
+  }
+  unRotate() {
+    // Uses +3 instead of -1 because negative module doesn't wrap around
+    this.rotation = Piece.rotations()[(Piece.rotations().indexOf(this.rotation)+3) % 4];
+  }
+  hasPoint(point) {
+    return this.points().some(item => item.sameAs(point));
+  }
+  fallOne() {
+    this.offset = new Point(this.offset.row+1, this.offset.col);
+  }
+  liftOne() {
+    this.offset = new Point(this.offset.row-1, this.offset.col);
+  }
+  left() {
+    this.offset = new Point(this.offset.row, this.offset.col-1);
+  }
+  right() {
+    this.offset = new Point(this.offset.row, this.offset.col+1);
+  } 
+  static rotations() {
+    return ['N','E','S','W'];
+  }
 }
 
 // dictionary of shape type to square offsets

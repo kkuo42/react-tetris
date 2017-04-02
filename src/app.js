@@ -44,7 +44,7 @@ function reducer(state = initialState, action) {
     switch (action.type) {
       case 'TICK':
         const rev = state.game.tick();
-        if (rev.isGameOver) {
+        if (rev.isGameLost()) {
           return updateObj(state, {status: 'gameover', game: rev});
         }
         timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
@@ -96,6 +96,7 @@ function startNewGame(state) {
   });
 }
 
+// Keyboard control bindings
 Mousetrap.bind('shift', function() { store.dispatch({type:'HOLD'}); });
 Mousetrap.bind('enter', function() { store.dispatch({type:'START'}); });
 Mousetrap.bind('space', function() { store.dispatch({type:'FALL'}); });
