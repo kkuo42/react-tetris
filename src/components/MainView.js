@@ -2,6 +2,7 @@ import * as React from 'react';
 import {NameForm} from './NameForm';
 import {GameView} from './components';
 import {ScoreView} from './ScoreView';
+import {HighScores} from './HighScores';
 
 export class MainView extends React.Component {
   render() {
@@ -28,6 +29,7 @@ export class MainView extends React.Component {
       case 'gameover':
         return <div className="border" style={s}>
           <h1 style={{margin:'22px'}}>GAME OVER</h1>
+          <HighScores />
           <NameForm score={this.props.passedState.game.score} />
           <div style={{margin:'42px'}}>Press Enter to play again</div>
           <ScoreView score={this.props.passedState.game.score} lines={this.props.passedState.game.lines} />

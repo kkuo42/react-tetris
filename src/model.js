@@ -86,7 +86,6 @@ class Piece {
 
 export class Game {
   constructor() {
-    this.time = 0;
     this.rows = 20;
     this.cols = 10;
     this.startNextGame();
