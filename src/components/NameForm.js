@@ -14,24 +14,39 @@ export class NameForm extends React.Component {
   }
 
   handleSubmit(event) {
-    alert('Name: ' + this.state.name + "\nScore: " + this.props.score);
     event.preventDefault();
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", '/submit', true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.send(JSON.stringify({
-        name: this.state.name,
-        score: this.props.score
-    }));
+
+    if(this.state.name === "") {
+      alert("You must enter a name.");
+    }
+    else {
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", '/submit', true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.send(JSON.stringify({
+          name: this.state.name,
+          score: this.props.score
+      }));
+      this.setState({submitted: true});
+      this.props.store.dispatch({type: "submit"});
+    }
   }
 
   render() {
-    return <form onSubmit={this.handleSubmit}>
-      <label>
-        Name:
-        <input type="text" value={this.state.value} onChange={this.handleChange} />
-      </label>
-      <input type="submit" value="Submit" />
-    </form>;
+    if(this.state.submitted) {
+      return <div>Submitted!</div>;
+    }
+    else {
+      return <div>
+        Submit highscore?
+        <form onSubmit={this.handleSubmit}>
+          <label>
+            Name:
+            <input type="text" value={this.state.value} onChange={this.handleChange} />
+          </label>
+          <input type="submit" value="Submit" />
+        </form>
+      </div>;
+    }
   }
 }

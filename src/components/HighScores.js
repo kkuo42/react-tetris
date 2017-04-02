@@ -31,7 +31,7 @@ export class HighScores extends React.Component {
       return <h1>LOADING</h1>;
     }
     else { 
-      const tableItems = Object.entries(this.state.scores).map(
+      const tableItems = this.state.scores.map(
         (x) => <tr key={count++}>
                  <td>{x[0]}</td>
                  <td>{x[1]}</td>
