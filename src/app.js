@@ -6,22 +6,14 @@ import { createStore } from 'redux';
 import * as Mousetrap from 'mousetrap';
 
 const initialState = {
-  status: 'splash'
-}
-
-function updateObj(oldObject, newValues) {
-  return Object.assign({}, oldObject, newValues);
+  status: 'splash',
+  scores: []
 }
 
 function reducer(state = initialState, action) {
   if(state.status === 'splash') {
     if(action.type === 'START') {
-      timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
-      state.game = new Game();
-      return updateObj( state, {
-        status: 'playing',
-        game: state.game.startNextGame()
-      });
+      return startNewGame(state);
     }
     else return state;
   }
@@ -36,16 +28,16 @@ function reducer(state = initialState, action) {
   }
 
   else if(state.status === 'gameover') {
-    if(action.type === 'START') {
-      clearTimeout(timer)
-      timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
-      state.game = new Game();
-      return updateObj( state, {
-        status: 'playing',
-        game: state.game.startNextGame()
-      });
+    switch(action.type) {
+      case 'REQUEST_SCORES':
+        requestScores();
+        return state;
+      case 'RECEIVED_SCORES':
+        return updateObj(state, {scores: action.scores});
+      case 'START':
+        return startNewGame(state);
+      default: return state; 
     }
-    else return state; 
   }
 
   else {
@@ -76,6 +68,33 @@ function reducer(state = initialState, action) {
   }
 }
 
+function updateObj(oldObject, newValues) {
+  return Object.assign({}, oldObject, newValues);
+}
+
+function requestScores() {
+  var xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      store.dispatch({
+        type: 'RECEIVED_SCORES', 
+        scores: JSON.parse(xhr.responseText)
+      });
+    }
+  };
+  xhr.open("GET", './scores' , true);
+  xhr.send(null);
+}
+
+function startNewGame(state) {
+  clearTimeout(timer)
+  timer = setTimeout(() => store.dispatch({ type: 'TICK' }),500);
+  state.game = new Game();
+  return updateObj( state, {
+    status: 'playing',
+    game: state.game.startNextGame()
+  });
+}
 
 Mousetrap.bind('shift', function() { store.dispatch({type:'HOLD'}); });
 Mousetrap.bind('enter', function() { store.dispatch({type:'START'}); });
@@ -88,8 +107,11 @@ Mousetrap.bind('down', function() { store.dispatch({type:'DOWN'}); });
 render(<MainView passedState={initialState} />, document.getElementById('container'));
 
 let store = createStore(reducer);
-store.subscribe(() => { 
-  render(<MainView passedState={store.getState()} />, document.getElementById('container'));
+store.subscribe( () => { 
+  render(
+    <MainView dispatch={store.dispatch} passedState={store.getState()} />,
+    document.getElementById('container')
+  );
 });
 
 let timer = {};

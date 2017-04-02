@@ -4,7 +4,6 @@ export class NameForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {name: ''};
-
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
@@ -28,7 +27,7 @@ export class NameForm extends React.Component {
           score: this.props.score
       }));
       this.setState({submitted: true});
-      this.props.store.dispatch({type: "submit"});
+      this.props.dispatch({type: "REQUEST_SCORES"});
     }
   }
 
