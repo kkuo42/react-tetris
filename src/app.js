@@ -7,7 +7,8 @@ import * as Mousetrap from 'mousetrap';
 
 const initialState = {
   status: 'splash',
-  scores: []
+  scores: [],
+  online: false
 }
 
 function reducer(state = initialState, action) {
@@ -33,7 +34,7 @@ function reducer(state = initialState, action) {
         requestScores();
         return state;
       case 'RECEIVED_SCORES':
-        return updateObj(state, {scores: action.scores});
+        return updateObj(state, {scores: action.scores, online: true});
       case 'START':
         return startNewGame(state);
       default: return state; 
@@ -78,7 +79,7 @@ function requestScores() {
     if (xhr.readyState === 4 && xhr.status === 200) {
       store.dispatch({
         type: 'RECEIVED_SCORES', 
-        scores: JSON.parse(xhr.responseText)
+        scores: JSON.parse(xhr.responseText),
       });
     }
   };
@@ -92,7 +93,9 @@ function startNewGame(state) {
   state.game = new Game();
   return updateObj( state, {
     status: 'playing',
-    game: state.game.startNextGame()
+    game: state.game.startNextGame(),
+    scores: [],
+    online: false
   });
 }
 

@@ -30,8 +30,12 @@ export class MainView extends React.Component {
       case 'gameover':
         return <div className="border" style={s}>
           <h1 style={{margin:'22px'}}>GAME OVER</h1>
-          <HighScores dispatch={this.props.dispatch} scores={state.scores}/>
-          <NameForm dispatch={this.props.dispatch} score={state.game.score} />
+          <HighScores dispatch={this.props.dispatch} 
+                      scores={state.scores} 
+                      online={state.online}/>
+          <NameForm dispatch={this.props.dispatch} 
+                    score={state.game.score} 
+                    online={state.online}/>
           <div style={{margin:'42px'}}>Press Enter to play again</div>
           <ScoreView score={state.game.score} lines={state.game.lines} />
         </div>; 

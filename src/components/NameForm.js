@@ -33,7 +33,10 @@ export class NameForm extends React.Component {
 
   render() {
     if(this.state.submitted) {
-      return <div>Submitted!</div>;
+      if(this.props.online)
+        return <div>Submitted!</div>;
+      else
+        return <div>Highscore server offline</div>
     }
     else {
       return <div>

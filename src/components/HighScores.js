@@ -8,8 +8,8 @@ export class HighScores extends React.Component {
   }
 
   render() {
-    if(!this.props.scores) {
-      return <h1>LOADING</h1>;
+    if(!this.props.online) {
+      return <h2>Server Offline</h2>;
     }
     else { 
       const tableItems = this.props.scores.map(
