@@ -4,4 +4,5 @@ flask
 app/__pycache__
 app/templates/index.html
 app/*.pyc
+app/.DS_Store
 .vscode
