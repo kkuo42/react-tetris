@@ -10,6 +10,11 @@ Shift to hold piece
 
 Space to drop piece
 
+Playable Version without Highscore Boards
+-----------------------------------------
+
+https://kkuo42.github.io/react-tetris/
+
 Setup
 --------------
 Install npm, venv, flask.
